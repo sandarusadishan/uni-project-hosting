@@ -54,7 +54,7 @@ import EditUserDialog from "../components/EditUserDialog"; // ✅ Edit Dialog
 import ConfirmDeleteDialog from "../components/ConfirmDeleteDialog"; // Dialog Component
 
 // Define the base URLs
-const BASE_URL = "http://localhost:3000";
+const BASE_URL = "https://grilmelt-burger.onrender.com";
 const API_URL = `${BASE_URL}/api`;
 const LOGO_URL = `/logo.png`; // Use a relative path
 

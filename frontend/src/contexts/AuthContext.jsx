@@ -1,10 +1,22 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode'; // ✅ jwt-decode import කරන්න
 
 const AuthContext = createContext();
 
 const USER_STORAGE_KEY = 'burger_shop_user';
 const API_URL = 'https://grilmelt-burger.onrender.com/api/users';
+
+const isTokenExpired = (token) => {
+  if (!token) return true;
+  try {
+    const decoded = jwtDecode(token);
+    const currentTime = Date.now() / 1000; // Convert to seconds
+    return decoded.exp < currentTime;
+  } catch (error) {
+    return true; // If token is invalid, treat as expired
+  }
+};
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -13,7 +25,8 @@ export const AuthProvider = ({ children }) => {
     try {
       const savedUser = localStorage.getItem(USER_STORAGE_KEY);
       const userObject = savedUser ? JSON.parse(savedUser) : null;
-      if (userObject && userObject.token) {
+      // ✅ Token එකේ കാലാവധി කාලය check කරන්න
+      if (userObject && userObject.token && !isTokenExpired(userObject.token)) {
         setUser(userObject);
       }
     } catch (error) {

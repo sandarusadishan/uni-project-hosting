@@ -59,8 +59,19 @@ export const updateOrderStatus = async (req, res) => {
     }
     // ... (rest of the logic)
     try {
-        const updatedOrder = await Order.findByIdAndUpdate(orderId, { status: newStatus }, { new: true, runValidators: true });
-        if (!updatedOrder) return res.status(404).json({ message: 'Order not found.' });
+        const order = await Order.findById(orderId);
+
+        if (!order) {
+            return res.status(404).json({ message: 'Order not found.' });
+        }
+
+        // 🛑 වැදගත්ම කොටස: Order එක දැනටමත් 'delivered' නම්, status එක වෙනස් කිරීම නවත්වන්න.
+        if (order.status === 'delivered') {
+            return res.status(400).json({ message: 'This order has already been delivered and its status cannot be changed.' });
+        }
+
+        order.status = newStatus;
+        const updatedOrder = await order.save();
         res.status(200).json({ message: `Order ${orderId} status updated to ${newStatus}.`, order: updatedOrder });
     } catch (error) {
         console.error('Update status error:', error);
